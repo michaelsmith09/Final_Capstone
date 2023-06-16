@@ -1,0 +1,10 @@
+[
+    {
+        "image":"../pictures/cherry.png",
+        "name":"cherry"
+    },
+    {
+        "image":"../pictures/grape.png",
+        "name":"grape"
+    }
+]
