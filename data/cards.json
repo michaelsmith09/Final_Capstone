@@ -1,10 +1,38 @@
 [
     {
-        "image":"../pictures/cherry.png",
-        "name":"cherry"
+        "image":"../pictures/car.png",
+        "name":"car"
     },
     {
-        "image":"../pictures/grape.png",
-        "name":"grape"
+        "image":"../pictures/cat.png",
+        "name":"cat"
+    },
+    {
+        "image":"../pictures/circle.jpg",
+        "name":"circle"
+    },
+    {
+        "image":"../pictures/dog.jpg",
+        "name":"dog"
+    },
+    {
+        "image":"../pictures/diamond.png",
+        "name":"diamond"
+    },
+    {
+        "image":"../pictures/octagon.jpg",
+        "name":"octagon"
+    },
+    {
+        "image":"../pictures/rectangle.jpg",
+        "name":"rectangle"
+    },
+    {
+        "image":"../pictures/square.png",
+        "name":"square"
+    },
+    {
+        "image":"../pictures/triangle.jpg",
+        "name":"triangle"
     }
 ]

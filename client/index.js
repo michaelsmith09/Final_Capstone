@@ -1,92 +1,118 @@
 const cardSection = document.querySelector(".card-section");
+const startBtn = document.querySelector("#start").addEventListener("click", startGame);
 let cards = [];
-let firstCard, secondCard;
-let lockBoard = false;
+let flipCards = [];
+let firstCard = null;
+let secondCard = null;
 let score = 0;
+let turn = 0;
 
 document.querySelector(".score").textContent = score;
+document.querySelector(".turns").textContent = turn;
 
-fetch("./data/cards.json")
-    .then((res) => res.json())
-    .then((data) => {
-        cards = [...data, ...data];
-        shuffleCards();
-        generateCards();
-    });
 
-function shuffleCards() {
-    let currentIndex = cards.length,
-    randomIndex,
-    temporaryValue;
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = cards[currentIndex];
-        cards[currentIndex] = cards[randomIndex];
-        cards[randomIndex] = temporaryValue;
-    }
+async function startGame() {
+    const res = await axios.get('http://localhost:4800/api/getCards');
+    const data = await res.data;
+    cards = data;
+    turn = 0;
+    score = 0;
+    shuffleCards();
+    resetTurns()
 };
 
-function generateCards() {
-    for(let card of cards) {
+function shuffleCards() {
+    const shuffledCards = [...cards, ...cards]
+    .sort(() => Math.random() - 0.5)
+    .map((card) => {
+        return {
+            ...card,
+            id: Math.random(),
+        };
+    });
+    document.querySelector(".score").textContent = score;
+    cardSection.innerHTML = "";
+    generateCards(shuffledCards);
+};
+
+function generateCards(arr) {
+    for(let card of arr) {
         const cardElement =  document.createElement("div");
         cardElement.classList.add("card");
-        cardElement.setAttribute("data-name", card.name);
         cardElement.innerHTML = `
-            <div class="front">
-                <img class="front-image" src=${card.image} />
-            </div>
-            <div class="back">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxJJZIehOFPOtLnI2HAUTSiOurMXBtvUekxR-d4Op4-DQvLaZBxzZi4zGMPVCqt1qv3SA&usqp=CAU" />
+            <div data-name=${card.name} class="card-inner" onClick="flipCard(event)">
+                <img class="front front-image" src=${card.image} />
+                <img class="back" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxJJZIehOFPOtLnI2HAUTSiOurMXBtvUekxR-d4Op4-DQvLaZBxzZi4zGMPVCqt1qv3SA&usqp=CAU" />
             </div>
         `;
         cardSection.appendChild(cardElement);
-        cardElement.addEventListener("click", flipCard);
     }
 };
 
-function flipCard() {
-    if (lockBoard) return;
-    if (this === firstCard) return;
+function addTurn() {
+    axios
+        .post('http://localhost:4800/api/addTurn', { turn })
+        .then((res) => {
+            turn = res.data.turn;
 
-    this.classList.add("flipped");
+            document.querySelector('.turns').textContent = turn;
+        })
+        .catch((err) => console.log(err));
+};
 
-    if(!firstCard) {
-        firstCard = this;
+function resetTurns() {
+    turn = 0;
+    document.querySelector('.turns').textContent = turn;
+}
+
+function flipCard(e) {
+    const cardElement = e.currentTarget;
+    // addTurn();
+    // turn++;
+    // document.querySelector(".turns").textContent = turn;
+
+    if (cardElement === firstCard || cardElement.classList.contains('flipped')) {
         return;
     }
+    
+    cardElement.classList.toggle("flipped");
 
-    secondCard = this;
-    score++;
-    document.querySelector(".score").textContent = score;
-    lockBoard = true;
-
-    checkForMatch();
+    flipCards.push(cardElement)
+    console.log(flipCards)
+    if(flipCards.length === 2) {
+        if(flipCards[0].dataset.name === flipCards[1].dataset.name){
+            flipCards[0].removeEventListener("click", flipCard)
+            flipCards[1].removeEventListener("click", flipCard)
+            flipCards = [];
+            addTurn();
+            turn++;
+            score++;
+            document.querySelector(".score").textContent = score;
+            document.querySelector(".turns").textContent = turn;
+            
+            if (cards.length === score) {
+                setTimeout(() => {
+                    alert('You Found them All!');
+                    shuffleCards(cards);
+                }, 1000);
+            }
+        } else {
+            setTimeout(() => {
+                flipCards[0].classList.remove('flipped')
+                flipCards[1].classList.remove('flipped')
+                flipCards = [];
+                addTurn();
+                turn++;
+                document.querySelector(".turns").textContent = turn;
+            }, 700);
+        }
+    } 
 };
-
-function checkForMatch() {
-    let isMatch = firstCard.dataset.name === secondCard.dataset.name;
-
-    isMatch ? disableCards() : unflipCards();
-}
-
-function unflipCards() {
-    setTimeout(() => {
-        firstCard.classList.remove("flipped");
-        secondCard.classList.remove("flipped");
-        resetBoard();
-    }, 1000);
-}
-
-function resetBoard() {
-    firstCard = null;
-    secondCard = null;
-    lockBoard = flase;
-}
 
 function restart() {
     resetBoard();
     shuffleCards();
+    turn = 0;
     score = 0;
     document.querySelector(".score").textContent = score;
     cardSection.innerHTML = "";
