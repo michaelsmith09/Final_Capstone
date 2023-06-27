@@ -73,10 +73,6 @@ button:active {
     transition: transform 0.5s ease-in-out;
 }
 
-/* .card .flipped {
-    transform: rotateY(180deg)
-} */
-
 .front,
  .back{
     position: absolute;
@@ -97,25 +93,6 @@ button:active {
     transform: rotateY(180deg);
 }
 
-/* .card .front {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: rotateY(180)
-} */
-
-/* .card .back {
-    background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxJJZIehOFPOtLnI2HAUTSiOurMXBtvUekxR-d4Op4-DQvLaZBxzZi4zGMPVCqt1qv3SA&usqp=CAU");
-    background-position: center center;
-    background-size: cover;
-    backface-visibility: hidden;
-} */
-
-
 .card-size:hover {
     cursor: pointer;
 }
-
-/* .card-size:active {
-    transform: translateY(5px);
-} */

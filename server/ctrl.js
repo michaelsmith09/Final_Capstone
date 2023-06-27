@@ -10,7 +10,7 @@ module.exports = {
     },
     addTurn: (req, res) => {
         // turn++;
-        res.status(200).send({turn});
+        res.status(200).send({ turn });
 
     },
 
